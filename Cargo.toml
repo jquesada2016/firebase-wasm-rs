@@ -1,0 +1,25 @@
+[package]
+name = "firebase-wasm"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jose Quesada <jquesada2016@fau.edu>"]
+license = "MIT"
+description = "Rust bindings for the Firebase v9 JS SDK."
+keywords = ["firebase", "wasm", "bindings", "js"]
+categories = []
+homepage = "https://github.com/jquesada2016/firebase-wasm-rs"
+repository = "https://github.com/jquesada2016/firebase-wasm-rs"
+documentation = "https://docs.rs/firebase-wasm"
+categories = ["api-bindings", "wasm", "web-programming"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clone-macro = "0.1"
+futures = "0.3"
+gloo = "0.8"
+js-sys = "0.3"
+log = "0.4"
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = ["Blob"] }
