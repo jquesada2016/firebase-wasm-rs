@@ -5,12 +5,11 @@ edition = "2021"
 authors = ["Jose Quesada <jquesada2016@fau.edu>"]
 license = "MIT"
 description = "Rust bindings for the Firebase v9 JS SDK."
-keywords = ["firebase", "wasm", "bindings", "js"]
-categories = []
 homepage = "https://github.com/jquesada2016/firebase-wasm-rs"
 repository = "https://github.com/jquesada2016/firebase-wasm-rs"
 documentation = "https://docs.rs/firebase-wasm"
 categories = ["api-bindings", "wasm", "web-programming"]
+keywords = ["firebase", "wasm", "bindings", "js"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
