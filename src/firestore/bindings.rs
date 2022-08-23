@@ -51,6 +51,7 @@ extern "C" {
     #[wasm_bindgen(variadic)]
     pub fn query(collection: CollectionReference, constraints: Vec<QueryConstraint>) -> Query;
 
+    #[wasm_bindgen(js_name = "where")]
     pub fn where_(field_path: &str, op_str: &str, value: JsValue) -> QueryConstraint;
 
     #[wasm_bindgen(js_name = deleteDoc, catch)]
