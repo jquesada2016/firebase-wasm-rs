@@ -21,54 +21,54 @@ extern "C" {
     // =========================================================================
 
     #[wasm_bindgen(getter, js_name = displayName)]
-    pub fn display_name(this: UserInfo) -> Option<String>;
+    pub fn display_name(this: &UserInfo) -> Option<String>;
 
     #[wasm_bindgen(getter, js_name = email)]
-    pub fn email(this: UserInfo) -> Option<String>;
+    pub fn email(this: &UserInfo) -> Option<String>;
 
     #[wasm_bindgen(getter, js_name = phoneNumber)]
-    pub fn phone_number(this: UserInfo) -> Option<String>;
+    pub fn phone_number(this: &UserInfo) -> Option<String>;
 
     #[wasm_bindgen(getter, js_name = photoURL)]
-    pub fn photo_url(this: UserInfo) -> Option<String>;
+    pub fn photo_url(this: &UserInfo) -> Option<String>;
 
     #[wasm_bindgen(getter, js_name = providerId)]
-    pub fn provider_id(this: UserInfo) -> String;
+    pub fn provider_id(this: &UserInfo) -> String;
 
     #[wasm_bindgen(getter, js_name = uid)]
-    pub fn uid(this: UserInfo) -> String;
+    pub fn uid(this: &UserInfo) -> String;
 
     // =========================================================================
     //                              UserMetadata
     // =========================================================================
 
     #[wasm_bindgen(getter, js_name = creationTime)]
-    pub fn creation_time(this: UserMetadata) -> String;
+    pub fn creation_time(this: &UserMetadata) -> String;
 
     #[wasm_bindgen(getter, js_name = lastSignInTime)]
-    pub fn last_sign_in_time(this: UserMetadata) -> String;
+    pub fn last_sign_in_time(this: &UserMetadata) -> String;
 
     // =========================================================================
     //                                  User
     // =========================================================================
 
     #[wasm_bindgen(getter, js_name = emailVerified)]
-    pub fn email_verified(this: User) -> bool;
+    pub fn email_verified(this: &User) -> bool;
 
     #[wasm_bindgen(getter, js_name = isAnonymous)]
-    pub fn is_anonymous(this: User) -> bool;
+    pub fn is_anonymous(this: &User) -> bool;
 
     #[wasm_bindgen(getter)]
-    pub fn metadata(this: User) -> UserMetadata;
+    pub fn metadata(this: &User) -> UserMetadata;
 
     #[wasm_bindgen(getter, js_name = providerData)]
-    pub fn provider_data(this: User) -> Vec<UserInfo>;
+    pub fn provider_data(this: &User) -> Vec<UserInfo>;
 
     #[wasm_bindgen(getter, js_name = refreshToken)]
-    pub fn refresh_token(this: User) -> String;
+    pub fn refresh_token(this: &User) -> String;
 
     #[wasm_bindgen(getter, js_name = tenantId)]
-    pub fn tenant_id(this: User) -> String;
+    pub fn tenant_id(this: &User) -> String;
 
     #[wasm_bindgen(method, catch)]
     pub async fn delete(this: &User) -> Result<(), JsValue>;
