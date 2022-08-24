@@ -1,6 +1,6 @@
 [package]
 name = "firebase-wasm"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 authors = ["Jose Quesada <jquesada2016@fau.edu>"]
 license = "MIT"

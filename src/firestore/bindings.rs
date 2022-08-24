@@ -23,6 +23,12 @@ extern "C" {
     #[wasm_bindgen(catch)]
     pub fn doc(firestore: Firestore, path: &str) -> Result<DocumentReference, JsValue>;
 
+    #[wasm_bindgen(js_name = get_doc, catch)]
+    pub async fn get_doc(doc: DocumentReference) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(js_name = get_docs, catch)]
+    pub async fn get_docs(query: Query) -> Result<JsValue, JsValue>;
+
     #[wasm_bindgen(js_name = "setDoc", catch)]
     pub async fn set_doc(doc: DocumentReference, data: JsValue) -> Result<(), JsValue>;
 

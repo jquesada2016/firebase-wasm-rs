@@ -2,13 +2,13 @@ mod bindings;
 
 use std::fmt;
 
-use bindings::where_ as b_where;
 pub use bindings::{
     collection, delete_doc, doc, get_firestore, on_snapshot_doc, on_snapshot_query, query, set_doc,
     set_doc_with_options, CollectionReference, DocumentReference, DocumentSnapshot, Firestore,
     Query, QueryConstraint, QuerySnapshot, SetDocOptions,
 };
-use wasm_bindgen::JsValue;
+use bindings::{get_doc as b_get_doc, get_docs as b_get_docs, where_ as b_where};
+use wasm_bindgen::{JsCast, JsValue};
 
 pub fn where_<V: Into<JsValue>>(
     field_path: &str,
@@ -21,7 +21,8 @@ pub fn where_<V: Into<JsValue>>(
 }
 
 pub enum QueryConstraintOp {
-    /// `<`
+    /// `<`o
+    ///
     LessThan,
     /// `<=`
     LessThanEq,
@@ -60,4 +61,16 @@ impl fmt::Display for QueryConstraintOp {
 
         f.write_str(str)
     }
+}
+
+pub async fn get_doc(doc: DocumentReference) -> Result<DocumentSnapshot, JsValue> {
+    let snapshot = b_get_doc(doc).await?;
+
+    Ok(snapshot.unchecked_into())
+}
+
+pub async fn get_docs(query: Query) -> Result<QuerySnapshot, JsValue> {
+    let snapshot = b_get_docs(query).await?;
+
+    Ok(snapshot.unchecked_into())
 }
