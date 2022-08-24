@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 extern "C" {
     pub type Auth;
     #[derive(Debug)]
-    #[wasm_bindgen(extends = UserInfo)]
+    #[wasm_bindgen(extends = UserInfo, typescript_type = "FirebaseAuthUser")]
     pub type User;
     pub type UserMetadata;
     #[derive(Debug)]
