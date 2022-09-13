@@ -28,6 +28,9 @@ extern "C" {
     #[wasm_bindgen(js_name = deleteObject, catch)]
     pub async fn delete_object(ref_: Ref) -> Result<(), JsValue>;
 
+    #[wasm_bindgen(js_name = getMetadata, catch)]
+    pub async fn get_metadata(ref_: Ref) -> Result<JsValue, JsValue>;
+
     // =========================================================================
     //                              UploadTask
     // =========================================================================

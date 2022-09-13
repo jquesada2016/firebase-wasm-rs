@@ -1,8 +1,8 @@
 mod bindings;
 
 pub use bindings::{
-    delete_object, get_download_url, get_storage, ref_, upload_bytes, Ref, Storage, UploadTask,
-    UploadTaskSnapshot,
+    delete_object, get_download_url, get_storage, ref_, upload_bytes, FullMetadata, Ref,
+    SettableMetadata, Storage, UploadMetadata, UploadTask, UploadTaskSnapshot,
 };
 use futures::Stream;
 use std::{
@@ -12,6 +12,7 @@ use std::{
     task::{Context, Poll, Waker},
 };
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 
 impl UploadTask {
     pub fn async_iter(&self) -> UploadTaskAsyncIter {
@@ -125,4 +126,10 @@ impl Stream for UploadTaskAsyncIter {
             Poll::Pending
         }
     }
+}
+
+pub async fn get_metadata(ref_: Ref) -> Result<FullMetadata, JsValue> {
+    bindings::get_metadata(ref_)
+        .await
+        .map(|m| m.unchecked_into())
 }
