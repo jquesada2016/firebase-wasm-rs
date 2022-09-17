@@ -1,6 +1,6 @@
 [package]
 name = "firebase-wasm"
-version = "0.2.10"
+version = "0.3.0"
 edition = "2021"
 authors = ["Jose Quesada <jquesada2016@fau.edu>"]
 license = "MIT"
@@ -19,6 +19,8 @@ futures = "0.3"
 gloo = "0.8"
 js-sys = "0.3"
 log = "0.4"
+serde = "1.0"
+serde-wasm-bindgen = "0.4"
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = ["Blob"] }
