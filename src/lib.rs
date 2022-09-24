@@ -8,13 +8,18 @@
 //! struct, which is a helpful wrapper for converting upload tasks into
 //! rust [`streams`](futures::Stream).
 
+#![feature(unboxed_closures, fn_traits)]
+
 #[macro_use]
 extern crate clone_macro;
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate typed_builder;
 
 #[macro_use]
 mod utils;
 pub mod auth;
 pub mod firestore;
+pub mod functions;
 pub mod storage;

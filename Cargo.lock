@@ -43,7 +43,7 @@ checksum = "11b52aa11e0a83701c2f8a2b683c254889d8a957e7f58a5a06c5f98ebb4fc3c1"
 
 [[package]]
 name = "firebase-wasm"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "clone-macro",
  "futures",
@@ -52,6 +52,7 @@ dependencies = [
  "log",
  "serde",
  "serde-wasm-bindgen 0.4.3",
+ "typed-builder",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -531,6 +532,17 @@ name = "thiserror-impl"
 version = "1.0.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c251e90f708e16c49a16f4917dc2131e75222b72edfa9cb7f7c58ae56aae0c09"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "typed-builder"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "89851716b67b937e393b3daa8423e67ddfc4bbbf1654bcf05488e95e0828db0c"
 dependencies = [
  "proc-macro2",
  "quote",
