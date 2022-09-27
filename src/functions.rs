@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{marker::PhantomData, pin::Pin};
 
 use serde::{Deserialize, Serialize};
 use std::future::Future;
@@ -45,10 +45,11 @@ where
     Req: Serialize + 'static,
     Res: for<'de> Deserialize<'de> + 'static,
 {
-    type Output = Box<dyn Future<Output = Result<Result<Res, serde_wasm_bindgen::Error>, JsValue>>>;
+    type Output =
+        Pin<Box<dyn Future<Output = Result<Result<Res, serde_wasm_bindgen::Error>, JsValue>>>>;
 
     extern "rust-call" fn call_once(self, args: (Req,)) -> Self::Output {
-        Box::new(self.call_(args.0))
+        Box::pin(self.call_(args.0))
     }
 }
 
@@ -58,7 +59,7 @@ where
     Res: for<'de> Deserialize<'de> + 'static,
 {
     extern "rust-call" fn call_mut(&mut self, args: (Req,)) -> Self::Output {
-        Box::new(self.call_(args.0))
+        Box::pin(self.call_(args.0))
     }
 }
 
@@ -68,7 +69,7 @@ where
     Res: for<'de> Deserialize<'de> + 'static,
 {
     extern "rust-call" fn call(&self, args: (Req,)) -> Self::Output {
-        Box::new(self.call_(args.0))
+        Box::pin(self.call_(args.0))
     }
 }
 
