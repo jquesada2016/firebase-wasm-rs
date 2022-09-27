@@ -10,6 +10,11 @@ pub struct HttpsCallableOptions {
     pub timeout: Option<usize>,
 }
 
+#[derive(Deserialize)]
+struct HttpsCallableResponse<T> {
+    data: T,
+}
+
 pub struct HttpsCallable<Req, Res>
 where
     Req: Serialize,
@@ -36,7 +41,12 @@ where
 
         let fut = wasm_bindgen_futures::JsFuture::from(res.unchecked_into::<js_sys::Promise>());
 
-        async move { fut.await.map(|res| serde_wasm_bindgen::from_value(res)) }
+        async move {
+            fut.await.map(|res| {
+                serde_wasm_bindgen::from_value::<HttpsCallableResponse<Res>>(res)
+                    .map(|res| res.data)
+            })
+        }
     }
 }
 
