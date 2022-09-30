@@ -2,7 +2,8 @@ mod bindings;
 
 pub use bindings::{
     delete_object, get_download_url, get_storage, ref_, upload_bytes, FullMetadata, Ref,
-    SettableMetadata, Storage, UploadMetadata, UploadTask, UploadTaskSnapshot,
+    SettableMetadata, Storage, UploadMetadata, UploadMetadataOptions, UploadTask,
+    UploadTaskSnapshot,
 };
 use futures::Stream;
 use std::{

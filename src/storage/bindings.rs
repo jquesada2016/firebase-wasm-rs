@@ -1,4 +1,40 @@
+use serde::Serialize;
+use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
+
+#[derive(Debug, Clone, TypedBuilder, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UploadMetadataOptions {
+    pub cache_control: Option<String>,
+    pub content_disposition: Option<String>,
+    pub content_encoding: Option<String>,
+    pub content_language: Option<String>,
+    pub content_type: Option<String>,
+    #[builder(default, setter(skip))]
+    custom_metadata: HashMap<String, String>,
+    pub md5_hash: Option<String>,
+}
+
+impl UploadMetadataOptions {
+    pub fn add_custom_metadata(&mut self, key: impl ToString, value: impl ToString) -> &mut Self {
+        self.custom_metadata
+            .insert(key.to_string(), value.to_string());
+
+        self
+    }
+}
+
+pub fn upload_bytes(
+    ref_: Ref,
+    data: &web_sys::Blob,
+    metadata: Option<UploadMetadataOptions>,
+) -> Result<UploadTask, JsValue> {
+    let serializer = serde_wasm_bindgen::Serializer::new().serialize_maps_as_objects(true);
+
+    let metadata = metadata.serialize(&serializer).unwrap();
+
+    upload_bytes_(ref_, data, metadata)
+}
 
 #[wasm_bindgen(module = "firebase/storage")]
 extern "C" {
@@ -20,7 +56,11 @@ extern "C" {
     pub fn ref_(storage: Storage, path: &str) -> Ref;
 
     #[wasm_bindgen(js_name = uploadBytesResumable, catch)]
-    pub fn upload_bytes(ref_: Ref, data: &web_sys::Blob) -> Result<UploadTask, JsValue>;
+    fn upload_bytes_(
+        ref_: Ref,
+        data: &web_sys::Blob,
+        metadata: JsValue,
+    ) -> Result<UploadTask, JsValue>;
 
     #[wasm_bindgen(js_name = getDownloadURL, catch)]
     pub async fn get_download_url(ref_: Ref) -> Result<JsValue, JsValue>;
