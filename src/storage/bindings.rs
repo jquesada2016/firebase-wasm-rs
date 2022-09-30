@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 
 #[derive(Debug, Clone, TypedBuilder, Serialize)]
 #[serde(rename_all = "camelCase")]
-#[builder(field_defaults(default))]
+#[builder(field_defaults(default, setter(strip_option)))]
 pub struct UploadMetadataOptions {
     pub cache_control: Option<String>,
     pub content_disposition: Option<String>,
