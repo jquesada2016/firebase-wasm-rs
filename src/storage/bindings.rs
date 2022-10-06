@@ -1,10 +1,10 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
 #[derive(Debug, Clone, TypedBuilder, Serialize)]
 #[serde(rename_all = "camelCase")]
-#[builder(field_defaults(default, setter(strip_option)))]
+#[builder(field_defaults(default, setter(strip_option, into)))]
 pub struct UploadMetadataOptions {
     pub cache_control: Option<String>,
     pub content_disposition: Option<String>,
@@ -17,11 +17,22 @@ pub struct UploadMetadataOptions {
 }
 
 impl UploadMetadataOptions {
-    pub fn add_custom_metadata(&mut self, key: impl ToString, value: impl ToString) -> &mut Self {
+    pub fn add_custom_metadata(mut self, key: impl ToString, value: impl ToString) -> Self {
         self.custom_metadata
             .insert(key.to_string(), value.to_string());
 
         self
+    }
+}
+
+impl UploadMetadata {
+    pub fn get_custom_metadata<T>(&self) -> Result<Option<T>, serde_wasm_bindgen::Error>
+    where
+        T: for<'de> Deserialize<'de>,
+    {
+        self.custom_metadata()
+            .map(|o| serde_wasm_bindgen::from_value::<T>(o.into()))
+            .transpose()
     }
 }
 
