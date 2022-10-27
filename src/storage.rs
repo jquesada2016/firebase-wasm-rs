@@ -23,9 +23,6 @@ impl UploadTask {
         let err: Rc<RefCell<Option<JsValue>>> = Rc::default();
 
         let on_snapshot = Closure::new(clone!([snapshot, waker], move |js_snapshot| {
-            trace!("UploadTask snapshot:");
-            console_log!(&js_snapshot);
-
             *snapshot.borrow_mut() = Some(js_snapshot);
 
             if let Some(w) = waker.borrow().as_ref() {
@@ -33,9 +30,6 @@ impl UploadTask {
             }
         }));
         let on_err = Closure::new(clone!([completed, err, waker], move |js_err| {
-            error!("UploadTask error:");
-            console_log!(&js_err);
-
             *err.borrow_mut() = Some(js_err);
 
             // Complete the stream since we errored
