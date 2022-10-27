@@ -40,8 +40,6 @@ impl UploadTask {
             }
         }));
         let on_complete = Closure::new(clone!([completed, waker], move || {
-            trace!("UploadTask completed");
-
             *completed.borrow_mut() = true;
 
             // Notify waker
@@ -93,31 +91,18 @@ impl Stream for UploadTaskAsyncIter {
     type Item = Result<UploadTaskSnapshot, JsValue>;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        trace!("Polling UploadTaskAsyncIter");
-
         // Update waker
         *self.waker.borrow_mut() = Some(cx.waker().to_owned());
 
         if *self.completed.borrow() {
             if let Some(err) = self.err.borrow_mut().take() {
-                trace!("UploadTaskAsyncIter errored, returning `Poll::Ready(Some(err))`");
-
                 Poll::Ready(Some(Err(err)))
             } else {
-                trace!("UploadTaskAsyncIter completed, returning `Poll::Ready(None)`");
-
                 Poll::Ready(None)
             }
         } else if let Some(snapshot) = self.snapshot.borrow_mut().take() {
-            trace!(
-                "UploadTaskAsyncIter yielded snapshot, returning \
-                 `Poll::Ready(Some(snapshot))`"
-            );
-
             Poll::Ready(Some(Ok(snapshot)))
         } else {
-            trace!("UploadTaskAsyncIter pending, returning `Poll::Pending`");
-
             Poll::Pending
         }
     }

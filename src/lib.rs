@@ -12,6 +12,7 @@
 
 #[macro_use]
 extern crate clone_macro;
+#[allow(unused_imports)]
 #[macro_use]
 extern crate log;
 #[macro_use]
