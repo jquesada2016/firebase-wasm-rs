@@ -24,3 +24,27 @@ pub mod auth;
 pub mod firestore;
 pub mod functions;
 pub mod storage;
+
+use std::{error::Error, fmt};
+
+use wasm_bindgen::prelude::*;
+
+impl fmt::Display for FirebaseError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.message().fmt(f)
+    }
+}
+
+impl Error for FirebaseError {}
+
+#[wasm_bindgen]
+extern "C" {
+    #[derive(Clone, Debug)]
+    pub type FirebaseError;
+
+    #[wasm_bindgen(method, getter)]
+    pub fn code(this: &FirebaseError) -> String;
+
+    #[wasm_bindgen(method, getter)]
+    pub fn message(this: &FirebaseError) -> String;
+}
