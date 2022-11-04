@@ -27,17 +27,18 @@ impl ParsedToken {
 
 #[wasm_bindgen(module = "firebase/auth")]
 extern "C" {
-    #[derive(Debug)]
+    #[derive(Clone, Debug)]
     #[wasm_bindgen(extends = UserInfo, typescript_type = r#"import("firebase/auth").User"#)]
     pub type User;
-    #[derive(Debug)]
+    #[derive(Clone, Debug)]
     pub type UserMetadata;
-    #[derive(Debug)]
+    #[derive(Clone, Debug)]
     pub type UserInfo;
-    #[derive(Debug)]
+    #[derive(Clone, Debug)]
     pub type IdTokenResult;
-    #[derive(Debug)]
+    #[derive(Clone, Debug)]
     pub type ParsedToken;
+    #[derive(Clone, Debug)]
     pub type Firebase;
 
     // =========================================================================

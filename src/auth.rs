@@ -1,5 +1,4 @@
 mod user;
-
 use std::{error::Error, fmt};
 
 pub use user::*;
@@ -104,7 +103,9 @@ pub async fn sign_in_with_email_and_password(
 
 #[wasm_bindgen(module = "firebase/auth")]
 extern "C" {
+    #[derive(Clone, Debug)]
     pub type Auth;
+    #[derive(Clone, Debug)]
     pub type UserCredential;
 
     #[wasm_bindgen(js_name = getAuth)]
