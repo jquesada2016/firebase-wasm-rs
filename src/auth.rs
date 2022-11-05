@@ -1,10 +1,9 @@
 mod user;
 use std::{error::Error, fmt};
 
+use crate::FirebaseError;
 pub use user::*;
 use wasm_bindgen::{prelude::*, JsCast};
-
-use crate::FirebaseError;
 
 #[derive(Clone, Debug, derive_more::Deref)]
 pub struct AuthError {
@@ -34,6 +33,7 @@ impl From<FirebaseError> for AuthError {
     }
 }
 
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, strum_macros::EnumString)]
 #[non_exhaustive]
 pub enum AuthErrorKind {
@@ -75,8 +75,50 @@ pub enum AuthErrorKind {
     EmailAlreadyInUse,
     #[strum(serialize = "auth/weak-password")]
     WeakPassword,
+    #[strum(serialize = "auth/missing-android-pkg-name")]
+    MissingAndroidPackageName,
+    #[strum(serialize = "auth/missing-continue-uri")]
+    MissingContinueUri,
+    #[strum(serialize = "auth/missing-ios-bundle-id")]
+    MissingIOSBundleId,
+    #[strum(serialize = "auth/invalid-continue-uri")]
+    InvalidContinueUri,
+    #[strum(serialize = "auth/unauthorized-continue-uri")]
+    UnauthorizedContinueUri,
+    #[strum(serialize = "auth/expired-action-code")]
+    ExpiredActionCode,
     #[strum(default)]
     Other(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, TypedBuilder, serde::Serialize)]
+#[builder(field_defaults(default))]
+pub struct ActionCodeSettings {
+    pub android: Option<AndroidActionCodeSettings>,
+    #[builder(setter(strip_option))]
+    pub handle_code_in_app: Option<bool>,
+    pub ios: Option<IOSActionCodeSettings>,
+    #[builder(!default)]
+    pub url: String,
+    pub dynamic_link_domain: Option<String>,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Debug, Clone, PartialEq, Eq, TypedBuilder, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AndroidActionCodeSettings {
+    #[builder(default, setter(strip_option))]
+    pub install_app: Option<bool>,
+    #[builder(default)]
+    pub minimum_version: Option<String>,
+    pub package_name: String,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Debug, Clone, PartialEq, Eq, TypedBuilder, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IOSActionCodeSettings {
+    pub bundle_id: String,
 }
 
 pub async fn create_user_with_email_and_password(
@@ -98,6 +140,29 @@ pub async fn sign_in_with_email_and_password(
     sign_in_with_email_and_password_js(auth, email, password)
         .await
         .map(|cred| cred.unchecked_into::<UserCredential>())
+        .map_err(|err| err.unchecked_into::<FirebaseError>().into())
+}
+
+pub async fn send_sign_in_link_to_email(
+    auth: Auth,
+    email: &str,
+    action_code_settings: &ActionCodeSettings,
+) -> Result<(), AuthError> {
+    let action_code_settings = serde_wasm_bindgen::to_value(action_code_settings).unwrap();
+
+    send_sign_in_link_to_email_js(auth, email, action_code_settings)
+        .await
+        .map_err(|err| err.unchecked_into::<FirebaseError>().into())
+}
+
+pub async fn sign_in_with_email_link(
+    auth: Auth,
+    email: &str,
+    email_link: &str,
+) -> Result<UserCredential, AuthError> {
+    sign_in_with_email_link_js(auth, email, email_link)
+        .await
+        .map(|u| u.unchecked_into::<UserCredential>())
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
 }
 
@@ -127,6 +192,23 @@ extern "C" {
         email: &str,
         password: &str,
     ) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(js_name = signInWithEmailLink, catch)]
+    async fn sign_in_with_email_link_js(
+        auth: Auth,
+        email: &str,
+        email_link: &str,
+    ) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(js_name = isSignInWithEmailLink, )]
+    pub fn is_sign_in_with_email_link(auth: Auth, email_link: &str) -> bool;
+
+    #[wasm_bindgen(js_name = sendSignInLinkToEmail, catch)]
+    async fn send_sign_in_link_to_email_js(
+        auth: Auth,
+        email: &str,
+        action_code_settings: JsValue,
+    ) -> Result<(), JsValue>;
 
     #[wasm_bindgen(js_name = signOut)]
     pub async fn sign_out(auth: Auth);
