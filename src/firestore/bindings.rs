@@ -1,5 +1,8 @@
 use wasm_bindgen::prelude::*;
 
+use crate::FirebaseError;
+
+#[derive(Clone, Copy, Debug, Default)]
 #[wasm_bindgen(getter_with_clone)]
 pub struct SetDocOptions {
     pub merge: Option<bool>,
@@ -7,61 +10,69 @@ pub struct SetDocOptions {
 
 #[wasm_bindgen(module = "firebase/firestore")]
 extern "C" {
+    #[derive(Clone, Debug)]
     pub type Firestore;
+    #[derive(Clone, Debug)]
     pub type DocumentReference;
+    #[derive(Clone, Debug)]
     pub type CollectionReference;
-    #[derive(Debug)]
+    #[derive(Clone, Debug)]
     pub type DocumentSnapshot;
+    #[derive(Clone, Debug)]
     pub type Query;
-    #[derive(Debug)]
+    #[derive(Clone, Debug)]
     pub type QuerySnapshot;
+    #[derive(Clone, Debug)]
     pub type QueryConstraint;
 
     #[wasm_bindgen(js_name = getFirestore)]
     pub fn get_firestore() -> Firestore;
 
     #[wasm_bindgen(catch)]
-    pub fn doc(firestore: Firestore, path: &str) -> Result<DocumentReference, JsValue>;
+    pub fn doc(firestore: &Firestore, path: &str) -> Result<DocumentReference, JsValue>;
 
     #[wasm_bindgen(js_name = getDoc, catch)]
-    pub async fn get_doc(doc: DocumentReference) -> Result<JsValue, JsValue>;
+    pub async fn get_doc(doc: &DocumentReference) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(js_name = getDocs, catch)]
-    pub async fn get_docs(query: Query) -> Result<JsValue, JsValue>;
+    pub async fn get_docs(query: &Query) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(js_name = "setDoc", catch)]
-    pub async fn set_doc(doc: DocumentReference, data: JsValue) -> Result<(), JsValue>;
+    pub async fn set_doc(doc: &DocumentReference, data: JsValue) -> Result<(), JsValue>;
 
     #[wasm_bindgen(js_name = "setDoc", catch)]
     pub async fn set_doc_with_options(
-        doc: DocumentReference,
+        doc: &DocumentReference,
         data: JsValue,
         options: SetDocOptions,
     ) -> Result<(), JsValue>;
 
     #[wasm_bindgen(catch)]
-    pub fn collection(firestore: Firestore, path: &str) -> Result<CollectionReference, JsValue>;
+    pub fn collection(
+        firestore: &Firestore,
+        path: &str,
+    ) -> Result<CollectionReference, FirebaseError>;
 
     #[wasm_bindgen(js_name = onSnapshot)]
     pub fn on_snapshot_doc(
-        reference: DocumentReference,
+        reference: &DocumentReference,
         observer: &Closure<dyn FnMut(DocumentSnapshot)>,
     ) -> js_sys::Function;
 
     #[wasm_bindgen(js_name = onSnapshot)]
     pub fn on_snapshot_query(
-        query: Query,
+        query: &Query,
         observer: &Closure<dyn FnMut(QuerySnapshot)>,
     ) -> js_sys::Function;
 
     #[wasm_bindgen(variadic)]
-    pub fn query(collection: CollectionReference, constraints: Vec<QueryConstraint>) -> Query;
+    pub fn query(collection: &CollectionReference, constraints: Vec<QueryConstraint>) -> Query;
 
     #[wasm_bindgen(js_name = "where")]
     pub fn where_(field_path: &str, op_str: &str, value: JsValue) -> QueryConstraint;
 
     #[wasm_bindgen(js_name = deleteDoc, catch)]
-    pub async fn delete_doc(ref_: DocumentReference) -> Result<(), JsValue>;
+    pub async fn delete_doc(ref_: &DocumentReference) -> Result<(), JsValue>;
 
     // =========================================================================
     //                            QuerySnapshot

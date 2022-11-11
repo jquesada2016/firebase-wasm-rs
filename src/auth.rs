@@ -33,7 +33,6 @@ impl From<FirebaseError> for AuthError {
     }
 }
 
-#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, strum_macros::EnumString)]
 #[non_exhaustive]
 pub enum AuthErrorKind {
@@ -91,7 +90,7 @@ pub enum AuthErrorKind {
     Other(String),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, TypedBuilder, serde::Serialize)]
+#[derive(Debug, Clone, TypedBuilder, serde::Serialize)]
 #[builder(field_defaults(default))]
 pub struct ActionCodeSettings {
     pub android: Option<AndroidActionCodeSettings>,
@@ -166,6 +165,26 @@ pub async fn sign_in_with_email_link(
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
 }
 
+pub async fn send_password_reset_email(
+    auth: &Auth,
+    email: &str,
+    action_code_settings: Option<ActionCodeSettings>,
+) -> Result<(), AuthError> {
+    let action_code_settings = serde_wasm_bindgen::to_value(&action_code_settings).unwrap();
+
+    send_password_reset_email_js(auth, email, action_code_settings)
+        .await
+        .map_err(|err| err.unchecked_into::<FirebaseError>().into())
+}
+
+pub async fn verify_password_reset_code(auth: &Auth, code: &str) -> Result<String, AuthError> {
+    verify_password_reset_code_js(auth, code)
+        .await
+        .map(|res| res.unchecked_into::<js_sys::JsString>())
+        .map(|s| ToString::to_string(&s))
+        .map_err(|err| err.unchecked_into::<FirebaseError>().into())
+}
+
 #[wasm_bindgen(module = "firebase/auth")]
 extern "C" {
     #[derive(Clone, Debug)]
@@ -212,6 +231,16 @@ extern "C" {
 
     #[wasm_bindgen(js_name = signOut)]
     pub async fn sign_out(auth: Auth);
+
+    #[wasm_bindgen(js_name = sendPasswordResetEmail, catch)]
+    async fn send_password_reset_email_js(
+        auth: &Auth,
+        email: &str,
+        action_code_settings: JsValue,
+    ) -> Result<(), JsValue>;
+
+    #[wasm_bindgen(js_name = verifyPasswordResetCode, catch)]
+    async fn verify_password_reset_code_js(auth: &Auth, code: &str) -> Result<JsValue, JsValue>;
 
     // =======================================================
     //                  UserCredential
