@@ -1,7 +1,17 @@
 use serde::Deserialize;
 use wasm_bindgen::{prelude::*, JsCast};
 
+use crate::FirebaseError;
+
+use super::AuthError;
+
 impl User {
+    pub async fn delete(&self) -> Result<(), AuthError> {
+        self.delete_js()
+            .await
+            .map_err(|err| err.unchecked_into::<FirebaseError>().into())
+    }
+
     pub async fn get_id_token_result(&self, force_refresh: bool) -> Result<IdTokenResult, JsValue> {
         self.get_id_token_result_js(force_refresh)
             .await
@@ -95,8 +105,8 @@ extern "C" {
     #[wasm_bindgen(method, getter, js_name = tenantId)]
     pub fn tenant_id(this: &User) -> String;
 
-    #[wasm_bindgen(method, catch)]
-    async fn delete(this: &User) -> Result<(), JsValue>;
+    #[wasm_bindgen(method, js_name = delete, catch)]
+    async fn delete_js(this: &User) -> Result<(), JsValue>;
 
     #[wasm_bindgen(method, js_name = getIdToken, catch)]
     async fn get_id_token_js(this: &User, force_refresh: bool) -> Result<JsValue, JsValue>;
