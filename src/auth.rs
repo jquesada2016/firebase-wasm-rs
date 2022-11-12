@@ -185,6 +185,16 @@ pub async fn verify_password_reset_code(auth: &Auth, code: &str) -> Result<Strin
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
 }
 
+pub async fn confirm_password_reset(
+    auth: &Auth,
+    code: &str,
+    new_password: &str,
+) -> Result<(), JsValue> {
+    confirm_password_reset_js(auth, code, new_password)
+        .await
+        .map_err(|err| err.unchecked_into::<FirebaseError>().into())
+}
+
 #[wasm_bindgen(module = "firebase/auth")]
 extern "C" {
     #[derive(Clone, Debug)]
@@ -241,6 +251,13 @@ extern "C" {
 
     #[wasm_bindgen(js_name = verifyPasswordResetCode, catch)]
     async fn verify_password_reset_code_js(auth: &Auth, code: &str) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(js_name = confirmPasswordReset, catch)]
+    async fn confirm_password_reset_js(
+        auth: &Auth,
+        code: &str,
+        new_password: &str,
+    ) -> Result<(), JsValue>;
 
     // =======================================================
     //                  UserCredential
