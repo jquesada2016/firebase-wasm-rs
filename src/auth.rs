@@ -121,7 +121,7 @@ pub struct IOSActionCodeSettings {
 }
 
 pub async fn create_user_with_email_and_password(
-    auth: Auth,
+    auth: &Auth,
     email: &str,
     password: &str,
 ) -> Result<UserCredential, AuthError> {
@@ -132,7 +132,7 @@ pub async fn create_user_with_email_and_password(
 }
 
 pub async fn sign_in_with_email_and_password(
-    auth: Auth,
+    auth: &Auth,
     email: &str,
     password: &str,
 ) -> Result<UserCredential, AuthError> {
@@ -143,7 +143,7 @@ pub async fn sign_in_with_email_and_password(
 }
 
 pub async fn send_sign_in_link_to_email(
-    auth: Auth,
+    auth: &Auth,
     email: &str,
     action_code_settings: &ActionCodeSettings,
 ) -> Result<(), AuthError> {
@@ -155,7 +155,7 @@ pub async fn send_sign_in_link_to_email(
 }
 
 pub async fn sign_in_with_email_link(
-    auth: Auth,
+    auth: &Auth,
     email: &str,
     email_link: &str,
 ) -> Result<UserCredential, AuthError> {
@@ -168,7 +168,7 @@ pub async fn sign_in_with_email_link(
 pub async fn send_password_reset_email(
     auth: &Auth,
     email: &str,
-    action_code_settings: Option<ActionCodeSettings>,
+    action_code_settings: Option<&ActionCodeSettings>,
 ) -> Result<(), AuthError> {
     let action_code_settings = serde_wasm_bindgen::to_value(&action_code_settings).unwrap();
 
@@ -206,41 +206,41 @@ extern "C" {
     pub fn get_auth() -> Auth;
 
     #[wasm_bindgen(js_name = onAuthStateChanged)]
-    pub fn on_auth_state_changed(auth: Auth, callback: &Closure<dyn FnMut(Option<User>)>);
+    pub fn on_auth_state_changed(auth: &Auth, callback: &Closure<dyn FnMut(Option<User>)>);
 
     #[wasm_bindgen(js_name = createUserWithEmailAndPassword, catch)]
     async fn create_user_with_email_and_password_js(
-        auth: Auth,
+        auth: &Auth,
         email: &str,
         password: &str,
     ) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(js_name = signInWithEmailAndPassword, catch)]
     async fn sign_in_with_email_and_password_js(
-        auth: Auth,
+        auth: &Auth,
         email: &str,
         password: &str,
     ) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(js_name = signInWithEmailLink, catch)]
     async fn sign_in_with_email_link_js(
-        auth: Auth,
+        auth: &Auth,
         email: &str,
         email_link: &str,
     ) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(js_name = isSignInWithEmailLink, )]
-    pub fn is_sign_in_with_email_link(auth: Auth, email_link: &str) -> bool;
+    pub fn is_sign_in_with_email_link(auth: &Auth, email_link: &str) -> bool;
 
     #[wasm_bindgen(js_name = sendSignInLinkToEmail, catch)]
     async fn send_sign_in_link_to_email_js(
-        auth: Auth,
+        auth: &Auth,
         email: &str,
         action_code_settings: JsValue,
     ) -> Result<(), JsValue>;
 
     #[wasm_bindgen(js_name = signOut)]
-    pub async fn sign_out(auth: Auth);
+    pub async fn sign_out(auth: &Auth);
 
     #[wasm_bindgen(js_name = sendPasswordResetEmail, catch)]
     async fn send_password_reset_email_js(
