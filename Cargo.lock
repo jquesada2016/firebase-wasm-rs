@@ -191,7 +191,7 @@ dependencies = [
 
 [[package]]
 name = "firebase-wasm"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "clone-macro",
  "derive_more",
