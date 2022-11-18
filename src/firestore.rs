@@ -1,16 +1,14 @@
 mod bindings;
 
-use bindings::{
-    collection as b_collection, get_doc as b_get_doc, get_docs as b_get_docs,
-    set_doc_with_options as b_set_doc_with_options, where_ as b_where,
-};
+use bindings as b;
 pub use bindings::{
     delete_doc, doc, get_firestore, on_snapshot_doc, on_snapshot_query, query, set_doc,
     CollectionReference, DocumentReference, DocumentSnapshot, Firestore, Query, QueryConstraint,
-    QuerySnapshot, SetDocOptions,
+    QuerySnapshot, SetDocOptions, Transaction,
 };
-use std::{error::Error, fmt};
-use wasm_bindgen::{JsCast, JsValue};
+use futures::Future;
+use std::{cell::RefCell, error::Error, fmt, rc::Rc};
+use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
 
 use crate::FirebaseError;
 
@@ -87,7 +85,7 @@ pub fn where_<V: Into<JsValue>>(
 ) -> QueryConstraint {
     let value = value.into();
 
-    b_where(field_path, &op.to_string(), value)
+    b::where_(field_path, &op.to_string(), value)
 }
 
 pub enum QueryConstraintOp {
@@ -134,14 +132,14 @@ impl fmt::Display for QueryConstraintOp {
 }
 
 pub async fn get_doc(doc: &DocumentReference) -> Result<DocumentSnapshot, FirestoreError> {
-    b_get_doc(doc)
+    b::get_doc(doc)
         .await
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
         .map(|snapshot| snapshot.unchecked_into())
 }
 
 pub async fn get_docs(query: &Query) -> Result<QuerySnapshot, FirestoreError> {
-    b_get_docs(query)
+    b::get_docs(query)
         .await
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
         .map(|snapshot| snapshot.unchecked_into())
@@ -152,7 +150,7 @@ pub async fn set_doc_with_options<D: Into<JsValue>>(
     data: D,
     options: SetDocOptions,
 ) -> Result<(), FirestoreError> {
-    b_set_doc_with_options(doc, data.into(), options)
+    b::set_doc_with_options(doc, data.into(), options)
         .await
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
 }
@@ -161,5 +159,54 @@ pub fn collection(
     firestore: &Firestore,
     path: &str,
 ) -> Result<CollectionReference, FirestoreError> {
-    b_collection(firestore, path).map_err(|err| err.into())
+    b::collection(firestore, path).map_err(|err| err.into())
+}
+
+impl Transaction {
+    pub async fn get(&self, doc: &DocumentReference) -> Result<DocumentSnapshot, FirestoreError> {
+        self.get_js(doc)
+            .await
+            .map_err(|err| err.unchecked_into::<FirebaseError>().into())
+            .map(|snapshot| snapshot.unchecked_into())
+    }
+
+    pub fn set(&self, doc: &DocumentReference, data: JsValue) -> Result<Self, FirestoreError> {
+        self.set_js(doc, data).map_err(Into::into)
+    }
+
+    pub fn update(&self, doc: &DocumentReference, data: JsValue) -> Result<Self, FirestoreError> {
+        self.update_js(doc, data).map_err(Into::into)
+    }
+
+    pub fn delete(&self, doc: &DocumentReference) -> Result<Self, FirestoreError> {
+        self.delete_js(doc).map_err(Into::into)
+    }
+}
+
+pub async fn run_transaction<F, Fut, T, Err>(
+    firestore: &Firestore,
+    update_fn: F,
+) -> Result<(), FirestoreError>
+where
+    F: FnMut(Transaction) -> Fut + 'static,
+    Fut: Future<Output = Result<T, Err>>,
+    T: Into<JsValue>,
+    Err: Into<JsValue>,
+{
+    let update_fn = Rc::new(RefCell::new(update_fn));
+
+    let update_fn = Closure::new(move |t| {
+        wasm_bindgen_futures::future_to_promise(clone!([update_fn], async move {
+            let mut update_fn_borrow = update_fn.borrow_mut();
+
+            update_fn_borrow(t)
+                .await
+                .map(|v| v.into())
+                .map_err(|err| err.into())
+        }))
+    });
+
+    b::run_transaction(firestore, &update_fn)
+        .await
+        .map_err(|err| err.unchecked_into::<FirebaseError>().into())
 }

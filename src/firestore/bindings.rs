@@ -24,6 +24,8 @@ extern "C" {
     pub type QuerySnapshot;
     #[derive(Clone, Debug)]
     pub type QueryConstraint;
+    #[derive(Clone, Debug)]
+    pub type Transaction;
 
     #[wasm_bindgen(js_name = getFirestore)]
     pub fn get_firestore() -> Firestore;
@@ -74,6 +76,12 @@ extern "C" {
     #[wasm_bindgen(js_name = deleteDoc, catch)]
     pub async fn delete_doc(ref_: &DocumentReference) -> Result<(), JsValue>;
 
+    #[wasm_bindgen(js_name = runTransaction, catch)]
+    pub async fn run_transaction(
+        firestore: &Firestore,
+        update_fn: &Closure<dyn FnMut(Transaction) -> js_sys::Promise>,
+    ) -> Result<(), JsValue>;
+
     // =========================================================================
     //                            QuerySnapshot
     // =========================================================================
@@ -103,4 +111,33 @@ extern "C" {
     #[wasm_bindgen(method, js_name = "ref")]
     pub fn ref_(this: &DocumentSnapshot) -> DocumentReference;
 
+    // =========================================================================
+    //                            DocumentSnapshot
+    // =========================================================================
+
+    #[wasm_bindgen(method, catch, js_name = get)]
+    pub(crate) async fn get_js(
+        this: &Transaction,
+        doc: &DocumentReference,
+    ) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(method, js_name = set, catch)]
+    pub(crate) fn set_js(
+        this: &Transaction,
+        doc: &DocumentReference,
+        data: JsValue,
+    ) -> Result<Transaction, FirebaseError>;
+
+    #[wasm_bindgen(method, js_name = update, catch)]
+    pub(crate) fn update_js(
+        this: &Transaction,
+        doc: &DocumentReference,
+        data: JsValue,
+    ) -> Result<Transaction, FirebaseError>;
+
+    #[wasm_bindgen(method, js_name = delete, catch)]
+    pub(crate) fn delete_js(
+        this: &Transaction,
+        doc: &DocumentReference,
+    ) -> Result<Transaction, FirebaseError>;
 }
