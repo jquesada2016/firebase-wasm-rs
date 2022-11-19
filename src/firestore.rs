@@ -1,5 +1,6 @@
 mod bindings;
 
+use crate::FirebaseError;
 use bindings as b;
 pub use bindings::{
     delete_doc, doc, get_firestore, on_snapshot_doc, on_snapshot_query, query, set_doc,
@@ -8,14 +9,16 @@ pub use bindings::{
 };
 use futures::Future;
 use std::{cell::RefCell, error::Error, fmt, rc::Rc};
+use wasm_bindgen::prelude::*;
 use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
 
-use crate::FirebaseError;
-
 #[derive(Clone, Debug, derive_more::Deref)]
+#[wasm_bindgen(getter_with_clone)]
 pub struct FirestoreError {
+    #[wasm_bindgen(skip)]
     pub kind: FirestoreErrorKind,
     #[deref]
+    #[wasm_bindgen(readonly)]
     pub source: FirebaseError,
 }
 
