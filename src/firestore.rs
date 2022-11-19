@@ -131,14 +131,14 @@ impl fmt::Display for QueryConstraintOp {
     }
 }
 
-pub async fn get_doc(doc: &DocumentReference) -> Result<DocumentSnapshot, FirestoreError> {
+pub async fn get_doc(doc: DocumentReference) -> Result<DocumentSnapshot, FirestoreError> {
     b::get_doc(doc)
         .await
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
         .map(|snapshot| snapshot.unchecked_into())
 }
 
-pub async fn get_docs(query: &Query) -> Result<QuerySnapshot, FirestoreError> {
+pub async fn get_docs(query: Query) -> Result<QuerySnapshot, FirestoreError> {
     b::get_docs(query)
         .await
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
@@ -146,7 +146,7 @@ pub async fn get_docs(query: &Query) -> Result<QuerySnapshot, FirestoreError> {
 }
 
 pub async fn set_doc_with_options<D: Into<JsValue>>(
-    doc: &DocumentReference,
+    doc: DocumentReference,
     data: D,
     options: SetDocOptions,
 ) -> Result<(), FirestoreError> {
@@ -155,30 +155,27 @@ pub async fn set_doc_with_options<D: Into<JsValue>>(
         .map_err(|err| err.unchecked_into::<FirebaseError>().into())
 }
 
-pub fn collection(
-    firestore: &Firestore,
-    path: &str,
-) -> Result<CollectionReference, FirestoreError> {
+pub fn collection(firestore: Firestore, path: &str) -> Result<CollectionReference, FirestoreError> {
     b::collection(firestore, path).map_err(|err| err.into())
 }
 
 impl Transaction {
-    pub async fn get(&self, doc: &DocumentReference) -> Result<DocumentSnapshot, FirestoreError> {
+    pub async fn get(&self, doc: DocumentReference) -> Result<DocumentSnapshot, FirestoreError> {
         self.get_js(doc)
             .await
             .map_err(|err| err.unchecked_into::<FirebaseError>().into())
             .map(|snapshot| snapshot.unchecked_into())
     }
 
-    pub fn set(&self, doc: &DocumentReference, data: JsValue) -> Result<Self, FirestoreError> {
+    pub fn set(&self, doc: DocumentReference, data: JsValue) -> Result<Self, FirestoreError> {
         self.set_js(doc, data).map_err(Into::into)
     }
 
-    pub fn update(&self, doc: &DocumentReference, data: JsValue) -> Result<Self, FirestoreError> {
+    pub fn update(&self, doc: DocumentReference, data: JsValue) -> Result<Self, FirestoreError> {
         self.update_js(doc, data).map_err(Into::into)
     }
 
-    pub fn delete(&self, doc: &DocumentReference) -> Result<Self, FirestoreError> {
+    pub fn delete(&self, doc: DocumentReference) -> Result<Self, FirestoreError> {
         self.delete_js(doc).map_err(Into::into)
     }
 }
@@ -196,7 +193,7 @@ pub enum TransactionError {
 }
 
 pub async fn run_transaction<F, Fut, T, Err>(
-    firestore: &Firestore,
+    firestore: Firestore,
     update_fn: F,
 ) -> Result<(), TransactionError>
 where
