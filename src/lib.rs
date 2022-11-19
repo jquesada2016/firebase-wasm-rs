@@ -14,7 +14,7 @@
 extern crate clone_macro;
 #[allow(unused_imports)]
 #[macro_use]
-extern crate log;
+extern crate tracing;
 #[macro_use]
 extern crate typed_builder;
 

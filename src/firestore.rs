@@ -183,10 +183,22 @@ impl Transaction {
     }
 }
 
+#[derive(Clone, Debug, thiserror::Error)]
+pub enum TransactionError {
+    #[error("firestore error: {0}")]
+    Firestore(
+        #[from]
+        #[source]
+        FirestoreError,
+    ),
+    #[error("user-thrown error: {0:#?}")]
+    Custom(JsValue),
+}
+
 pub async fn run_transaction<F, Fut, T, Err>(
     firestore: &Firestore,
     update_fn: F,
-) -> Result<(), FirestoreError>
+) -> Result<(), TransactionError>
 where
     F: FnMut(Transaction) -> Fut + 'static,
     Fut: Future<Output = Result<T, Err>>,
@@ -208,5 +220,18 @@ where
 
     b::run_transaction(firestore, &update_fn)
         .await
-        .map_err(|err| err.unchecked_into::<FirebaseError>().into())
+        .map_err(|err| {
+            if let Ok(err) = err.clone().dyn_into::<js_sys::Object>() {
+                let name = err.constructor().name();
+
+                if name == "FirebaseError" {
+                    let err = err.unchecked_into::<FirebaseError>().into();
+                    TransactionError::Firestore(err)
+                } else {
+                    TransactionError::Custom(err.unchecked_into())
+                }
+            } else {
+                TransactionError::Custom(err)
+            }
+        })
 }
