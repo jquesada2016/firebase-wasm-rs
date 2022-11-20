@@ -184,7 +184,7 @@ impl Transaction {
 }
 
 #[derive(Clone, Debug, thiserror::Error)]
-pub enum TransactionError {
+pub enum TransactionError<Err> {
     #[error("firestore error: {0}")]
     Firestore(
         #[from]
@@ -192,46 +192,61 @@ pub enum TransactionError {
         FirestoreError,
     ),
     #[error("user-thrown error: {0:#?}")]
-    Custom(JsValue),
+    User(Err),
 }
+
+#[wasm_bindgen]
+pub struct UserAbortedTransaction;
 
 pub async fn run_transaction<F, Fut, T, Err>(
     firestore: Firestore,
     update_fn: F,
-) -> Result<(), TransactionError>
+) -> Result<T, TransactionError<Err>>
 where
     F: FnMut(Transaction) -> Fut + 'static,
     Fut: Future<Output = Result<T, Err>>,
-    T: Into<JsValue>,
-    Err: Into<JsValue>,
+    T: 'static,
+    Err: 'static,
 {
+    let result: Rc<RefCell<Option<Result<T, Err>>>> = Default::default();
+
     let update_fn = Rc::new(RefCell::new(update_fn));
 
-    let update_fn = Closure::new(move |t| {
-        wasm_bindgen_futures::future_to_promise(clone!([update_fn], async move {
+    let update_fn = Closure::new(clone!([result], move |t| {
+        wasm_bindgen_futures::future_to_promise(clone!([update_fn, result], async move {
             let mut update_fn_borrow = update_fn.borrow_mut();
+            let mut result_borrow = result.borrow_mut();
 
-            update_fn_borrow(t)
-                .await
-                .map(|v| v.into())
-                .map_err(|err| err.into())
-        }))
-    });
+            match update_fn_borrow(t).await {
+                Ok(v) => {
+                    *result_borrow = Some(Ok(v));
 
-    b::run_transaction(firestore, &update_fn)
-        .await
-        .map_err(|err| {
-            if let Ok(err) = err.clone().dyn_into::<js_sys::Object>() {
-                let name = err.constructor().name();
-
-                if name == "FirebaseError" {
-                    let err = err.unchecked_into::<FirebaseError>().into();
-                    TransactionError::Firestore(err)
-                } else {
-                    TransactionError::Custom(err.unchecked_into())
+                    Ok(JsValue::UNDEFINED)
                 }
-            } else {
-                TransactionError::Custom(err)
+                Err(err) => {
+                    *result_borrow = Some(Err(err));
+
+                    Err(UserAbortedTransaction.into())
+                }
             }
-        })
+        }))
+    }));
+
+    // Check to see if the error is a firebase error
+    if let Err(err) = b::run_transaction(firestore, &update_fn).await {
+        if let Ok(err) = err.dyn_into::<js_sys::Object>() {
+            if err.constructor().name() == "FirebaseError" {
+                return Err(TransactionError::Firestore(
+                    err.unchecked_into::<FirebaseError>().into(),
+                ));
+            }
+        }
+    }
+
+    let mut result_borrow = result.borrow_mut();
+
+    result_borrow
+        .take()
+        .unwrap()
+        .map_err(|err| TransactionError::User(err))
 }
