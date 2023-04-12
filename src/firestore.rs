@@ -5,7 +5,7 @@ use bindings as b;
 pub use bindings::{
     delete_doc, doc, get_firestore, on_snapshot_doc, on_snapshot_query, query, set_doc,
     CollectionReference, DocumentReference, DocumentSnapshot, Firestore, Query, QueryConstraint,
-    QuerySnapshot, SetDocOptions, Transaction,
+    QuerySnapshot, SetDocOptions, Timestamp, Transaction,
 };
 use futures::Future;
 use std::{cell::RefCell, error::Error, fmt, rc::Rc};
