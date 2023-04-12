@@ -153,4 +153,13 @@ extern "C" {
 
     #[wasm_bindgen(method, js_name = toDate)]
     pub fn to_date(this: &Timestamp) -> Date;
+
+    #[wasm_bindgen(method, js_name = isEqual)]
+    pub fn is_equal(this: &Timestamp, other: &Timestamp) -> bool;
+}
+
+impl PartialEq for Timestamp {
+    fn eq(&self, other: &Self) -> bool {
+        self.is_equal(other)
+    }
 }
