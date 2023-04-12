@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
 
 use crate::FirebaseError;
+use js_sys::Date;
 
 #[derive(Clone, Copy, Debug, Default)]
 #[wasm_bindgen(getter_with_clone)]
@@ -150,4 +151,6 @@ extern "C" {
     #[wasm_bindgen(js_namespace = Timestamp)]
     pub fn now() -> Timestamp;
 
+    #[wasm_bindgen(method, js_name = toDate)]
+    pub fn to_date(this: &Timestamp) -> Date;
 }
