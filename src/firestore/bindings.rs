@@ -26,6 +26,8 @@ extern "C" {
     pub type QueryConstraint;
     #[derive(Clone, Debug)]
     pub type Transaction;
+    #[derive(Clone, Debug)]
+    pub type Timestamp;
 
     #[wasm_bindgen(js_name = getFirestore)]
     pub fn get_firestore() -> Firestore;
@@ -140,4 +142,12 @@ extern "C" {
         this: &Transaction,
         doc: DocumentReference,
     ) -> Result<Transaction, FirebaseError>;
+
+    // =========================================================================
+    //                            Timestamp
+    // =========================================================================
+
+    #[wasm_bindgen(js_namespace = Timestamp)]
+    pub fn now() -> Timestamp;
+
 }
