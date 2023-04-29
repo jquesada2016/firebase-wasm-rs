@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
 
 use crate::FirebaseError;
+use js_sys::Date;
 
 #[derive(Clone, Copy, Debug, Default)]
 #[wasm_bindgen(getter_with_clone)]
@@ -26,6 +27,8 @@ extern "C" {
     pub type QueryConstraint;
     #[derive(Clone, Debug)]
     pub type Transaction;
+    #[derive(Clone, Debug)]
+    pub type Timestamp;
 
     #[wasm_bindgen(js_name = getFirestore)]
     pub fn get_firestore() -> Firestore;
@@ -140,4 +143,23 @@ extern "C" {
         this: &Transaction,
         doc: DocumentReference,
     ) -> Result<Transaction, FirebaseError>;
+
+    // =========================================================================
+    //                            Timestamp
+    // =========================================================================
+
+    #[wasm_bindgen(js_namespace = Timestamp)]
+    pub fn now() -> Timestamp;
+
+    #[wasm_bindgen(method, js_name = toDate)]
+    pub fn to_date(this: &Timestamp) -> Date;
+
+    #[wasm_bindgen(method, js_name = isEqual)]
+    pub fn is_equal(this: &Timestamp, other: &Timestamp) -> bool;
+}
+
+impl PartialEq for Timestamp {
+    fn eq(&self, other: &Self) -> bool {
+        self.is_equal(other)
+    }
 }
