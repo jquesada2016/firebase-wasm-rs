@@ -206,12 +206,19 @@ pub async fn confirm_password_reset(
     .map_err(|err| err.unchecked_into::<FirebaseError>().into())
 }
 
+#[wasm_bindgen_struct]
+#[opts(module = "firebase/auth", getter)]
+#[derive(Clone, Debug)]
+pub struct UserCredential {
+  pub user: user::User,
+  pub provider_id: String,
+  pub operation_type: String,
+}
+
 #[wasm_bindgen(module = "firebase/auth")]
 extern "C" {
   #[derive(Clone, Debug)]
   pub type Auth;
-  #[derive(Clone, Debug)]
-  pub type UserCredential;
 
   #[wasm_bindgen(js_name = getAuth)]
   pub fn get_auth() -> Auth;
@@ -275,17 +282,4 @@ extern "C" {
     code: String,
     new_password: String,
   ) -> Result<(), JsValue>;
-
-  // =======================================================
-  //                  UserCredential
-  // =======================================================
-
-  #[wasm_bindgen(method, getter)]
-  pub fn user(this: &UserCredential) -> user::User;
-
-  #[wasm_bindgen(method, getter, js_name = providerId)]
-  pub fn provider_id(this: &UserCredential) -> String;
-
-  #[wasm_bindgen(method, getter, js_name = operationType)]
-  pub fn operation_type(this: &UserCredential) -> String;
 }

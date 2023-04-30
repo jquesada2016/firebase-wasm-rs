@@ -28,5 +28,6 @@ thiserror = "1"
 tracing = "0.1"
 typed-builder = "0.10"
 wasm-bindgen = "0.2"
+wasm-bindgen-struct = { git = "https://github.com/jquesada2016/wasm-bindgen-struct" }
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = ["Blob"] }

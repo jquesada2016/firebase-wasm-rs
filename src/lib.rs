@@ -17,11 +17,13 @@ extern crate clone_macro;
 extern crate tracing;
 #[macro_use]
 extern crate typed_builder;
+#[macro_use]
+extern crate wasm_bindgen_struct;
 
 #[macro_use]
 mod utils;
 pub mod auth;
-pub mod firestore;
+// pub mod firestore;
 pub mod functions;
 pub mod storage;
 
