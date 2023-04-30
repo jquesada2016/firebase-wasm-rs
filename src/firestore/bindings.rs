@@ -1,4 +1,5 @@
 use crate::FirebaseError;
+use js_sys::Date;
 use wasm_bindgen::prelude::*;
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -25,6 +26,24 @@ extern "C" {
   pub type QueryConstraint;
   #[derive(Clone, Debug)]
   pub type Transaction;
+  #[derive(Clone, Debug)]
+  pub type Firestore;
+  #[derive(Clone, Debug)]
+  pub type DocumentReference;
+  #[derive(Clone, Debug)]
+  pub type CollectionReference;
+  #[derive(Clone, Debug)]
+  pub type DocumentSnapshot;
+  #[derive(Clone, Debug)]
+  pub type Query;
+  #[derive(Clone, Debug)]
+  pub type QuerySnapshot;
+  #[derive(Clone, Debug)]
+  pub type QueryConstraint;
+  #[derive(Clone, Debug)]
+  pub type Transaction;
+  #[derive(Clone, Debug)]
+  pub type Timestamp;
 
   #[wasm_bindgen(js_name = getFirestore)]
   pub fn get_firestore() -> Firestore;
@@ -152,4 +171,28 @@ extern "C" {
     this: &Transaction,
     doc: DocumentReference,
   ) -> Result<Transaction, FirebaseError>;
+  #[wasm_bindgen(method, js_name = delete, catch)]
+  pub(crate) fn delete_js(
+    this: &Transaction,
+    doc: DocumentReference,
+  ) -> Result<Transaction, FirebaseError>;
+
+  // =========================================================================
+  //                            Timestamp
+  // =========================================================================
+
+  #[wasm_bindgen(js_namespace = Timestamp)]
+  pub fn now() -> Timestamp;
+
+  #[wasm_bindgen(method, js_name = toDate)]
+  pub fn to_date(this: &Timestamp) -> Date;
+
+  #[wasm_bindgen(method, js_name = isEqual)]
+  pub fn is_equal(this: &Timestamp, other: &Timestamp) -> bool;
+}
+
+impl PartialEq for Timestamp {
+  fn eq(&self, other: &Self) -> bool {
+    self.is_equal(other)
+  }
 }

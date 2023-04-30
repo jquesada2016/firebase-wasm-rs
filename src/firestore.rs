@@ -18,6 +18,7 @@ pub use bindings::{
   QueryConstraint,
   QuerySnapshot,
   SetDocOptions,
+  Timestamp,
   Transaction,
 };
 use futures::Future;
