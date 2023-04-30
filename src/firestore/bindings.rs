@@ -27,22 +27,6 @@ extern "C" {
   #[derive(Clone, Debug)]
   pub type Transaction;
   #[derive(Clone, Debug)]
-  pub type Firestore;
-  #[derive(Clone, Debug)]
-  pub type DocumentReference;
-  #[derive(Clone, Debug)]
-  pub type CollectionReference;
-  #[derive(Clone, Debug)]
-  pub type DocumentSnapshot;
-  #[derive(Clone, Debug)]
-  pub type Query;
-  #[derive(Clone, Debug)]
-  pub type QuerySnapshot;
-  #[derive(Clone, Debug)]
-  pub type QueryConstraint;
-  #[derive(Clone, Debug)]
-  pub type Transaction;
-  #[derive(Clone, Debug)]
   pub type Timestamp;
 
   #[wasm_bindgen(js_name = getFirestore)]
@@ -166,11 +150,6 @@ extern "C" {
     data: JsValue,
   ) -> Result<Transaction, FirebaseError>;
 
-  #[wasm_bindgen(method, js_name = delete, catch)]
-  pub(crate) fn delete_js(
-    this: &Transaction,
-    doc: DocumentReference,
-  ) -> Result<Transaction, FirebaseError>;
   #[wasm_bindgen(method, js_name = delete, catch)]
   pub(crate) fn delete_js(
     this: &Transaction,
