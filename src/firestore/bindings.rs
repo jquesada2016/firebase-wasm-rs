@@ -51,6 +51,9 @@ extern "C" {
         options: SetDocOptions,
     ) -> Result<(), JsValue>;
 
+    #[wasm_bindgen(js_name = "updateDoc", catch)]
+    pub async fn update_doc(doc: DocumentReference, data: JsValue) -> Result<(), JsValue>;
+
     #[wasm_bindgen(catch)]
     pub fn collection(
         firestore: Firestore,
