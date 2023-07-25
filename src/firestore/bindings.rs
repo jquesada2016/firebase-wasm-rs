@@ -162,8 +162,14 @@ extern "C" {
     #[wasm_bindgen(js_namespace = Timestamp, js_name = fromDate)]
     pub fn from_date(date: &Date) -> Timestamp;
 
+    #[wasm_bindgen(js_namespace = Timestamp, js_name = fromMillis)]
+    pub fn from_millis(milliseconds: f64) -> Timestamp;
+
     #[wasm_bindgen(method, js_name = toDate)]
     pub fn to_date(this: &Timestamp) -> Date;
+
+    #[wasm_bindgen(method, js_name = toMillis)]
+    pub fn to_millis(this: &Timestamp) -> f64;
 
     #[wasm_bindgen(method, js_name = isEqual)]
     pub fn is_equal(this: &Timestamp, other: &Timestamp) -> bool;
