@@ -176,6 +176,13 @@ extern "C" {
 
     #[wasm_bindgen(method, js_name = isEqual)]
     pub fn is_equal(this: &Timestamp, other: &Timestamp) -> bool;
+
+    // =========================================================================
+    //                            DocumentReference
+    // =========================================================================
+
+    #[wasm_bindgen(method)]
+    pub fn path(this: &DocumentReference) -> String;
 }
 
 impl PartialEq for Timestamp {
@@ -183,3 +190,11 @@ impl PartialEq for Timestamp {
         self.is_equal(other)
     }
 }
+impl Eq for Timestamp {}
+
+impl PartialEq for DocumentReference {
+    fn eq(&self, other: &Self) -> bool {
+        self.path() == other.path()
+    }
+}
+impl Eq for DocumentReference {}
