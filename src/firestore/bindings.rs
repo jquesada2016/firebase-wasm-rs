@@ -181,8 +181,11 @@ extern "C" {
     //                            DocumentReference
     // =========================================================================
 
-    #[wasm_bindgen(method)]
+    #[wasm_bindgen(method, getter)]
     pub fn path(this: &DocumentReference) -> String;
+
+    #[wasm_bindgen(method, getter)]
+    pub fn id(this: &DocumentReference) -> String;
 }
 
 impl PartialEq for Timestamp {
