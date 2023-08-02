@@ -33,7 +33,7 @@ impl From<FirebaseError> for AuthError {
     }
 }
 
-#[derive(Clone, Debug, strum_macros::EnumString)]
+#[derive(Clone, Debug, strum::EnumString)]
 #[non_exhaustive]
 pub enum AuthErrorKind {
     #[strum(serialize = "auth/app-deleted")]

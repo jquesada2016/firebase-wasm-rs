@@ -44,7 +44,7 @@ impl From<FirebaseError> for FirestoreError {
     }
 }
 
-#[derive(Clone, Debug, strum_macros::EnumString)]
+#[derive(Clone, Debug, strum::EnumString)]
 #[non_exhaustive]
 pub enum FirestoreErrorKind {
     #[strum(serialize = "cancelled")]

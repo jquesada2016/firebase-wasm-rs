@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{future::Future, marker::PhantomData, pin::Pin};
+use std::{future::Future, marker::PhantomData};
 use wasm_bindgen::{prelude::*, JsCast};
 
 #[derive(Clone, Debug, Serialize, Deserialize, TypedBuilder)]
@@ -29,7 +29,7 @@ where
     Res: for<'de> Deserialize<'de>,
 {
     #[track_caller]
-    fn call_(
+    pub fn call_(
         &self,
         data: Req,
     ) -> impl Future<Output = Result<Result<Res, serde_wasm_bindgen::Error>, JsValue>> {
@@ -48,6 +48,7 @@ where
     }
 }
 
+#[cfg(feature = "nightly")]
 impl<Req, Res> FnOnce<(Req,)> for HttpsCallable<Req, Res>
 where
     Req: Serialize + 'static,
@@ -61,6 +62,7 @@ where
     }
 }
 
+#[cfg(feature = "nightly")]
 impl<Req, Res> FnMut<(Req,)> for HttpsCallable<Req, Res>
 where
     Req: Serialize + 'static,
@@ -71,6 +73,7 @@ where
     }
 }
 
+#[cfg(feature = "nightly")]
 impl<Req, Res> Fn<(Req,)> for HttpsCallable<Req, Res>
 where
     Req: Serialize + 'static,
@@ -97,8 +100,8 @@ where
 
     HttpsCallable {
         callable,
-        _request_data: PhantomData::default(),
-        _response_data: PhantomData::default(),
+        _request_data: PhantomData,
+        _response_data: PhantomData,
     }
 }
 

@@ -8,7 +8,7 @@
 //! struct, which is a helpful wrapper for converting upload tasks into
 //! rust [`streams`](futures::Stream).
 
-#![feature(unboxed_closures, fn_traits)]
+#![cfg_attr(feature = "nightly", feature(unboxed_closures, fn_traits))]
 
 #[macro_use]
 extern crate clone_macro;

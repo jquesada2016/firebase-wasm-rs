@@ -13,22 +13,23 @@ keywords = ["firebase", "wasm", "bindings", "js"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+nightly = []
+
 [dependencies]
 clone-macro = "0.1"
 derive_more = "0.99"
 futures = "0.3"
-gloo = "0.8"
+gloo = "0.9"
 js-sys = "0.3"
 serde = "1.0"
 serde-wasm-bindgen = "0.5"
-serde_with = "2"
-strum = "0.24"
-strum_macros = "0.24"
+serde_with = "3"
+strum = { version = "0.25", features = ["derive"] }
 thiserror = "1"
 tracing = "0.1"
-typed-builder = "0.10"
+typed-builder = "0.15"
 wasm-bindgen = "0.2"
 wasm-bindgen-struct = { git = "https://github.com/jquesada2016/wasm-bindgen-struct" }
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = ["Blob"] }
-
