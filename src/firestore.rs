@@ -3,12 +3,12 @@ mod bindings;
 use crate::FirebaseError;
 use bindings as b;
 pub use bindings::{
-    delete_doc, doc, get_firestore, limit, on_snapshot_doc, on_snapshot_query, query, set_doc,
-    CollectionReference, DocumentReference, DocumentSnapshot, Firestore, Query, QueryConstraint,
-    QuerySnapshot, SetDocOptions, Timestamp, Transaction,
+    add_doc, delete_doc, doc, get_firestore, limit, on_snapshot_doc, on_snapshot_query, query,
+    set_doc, update_doc, CollectionReference, DocumentReference, DocumentSnapshot, Firestore,
+    Query, QueryConstraint, QuerySnapshot, SetDocOptions, Timestamp, Transaction,
 };
 use futures::Future;
-use std::{cell::RefCell, error::Error, fmt, rc::Rc};
+use std::{cell::RefCell, error::Error, fmt, rc::Rc, time::SystemTime};
 use wasm_bindgen::{
     prelude::{Closure, *},
     JsCast, JsValue,
@@ -301,4 +301,15 @@ where
         .take()
         .unwrap()
         .map_err(|err| TransactionError::User(err))
+}
+
+impl From<SystemTime> for Timestamp {
+    fn from(time: SystemTime) -> Self {
+        Self::from_millis(
+            time.duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_secs_f64()
+                * 1000.,
+        )
+    }
 }

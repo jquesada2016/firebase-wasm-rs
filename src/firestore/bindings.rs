@@ -51,6 +51,12 @@ extern "C" {
         options: SetDocOptions,
     ) -> Result<(), JsValue>;
 
+    #[wasm_bindgen(js_name = "updateDoc", catch)]
+    pub async fn update_doc(doc: DocumentReference, data: JsValue) -> Result<(), JsValue>;
+
+    #[wasm_bindgen(js_name = "addDoc", catch)]
+    pub async fn add_doc(collection: CollectionReference, data: JsValue) -> Result<(), JsValue>;
+
     #[wasm_bindgen(catch)]
     pub fn collection(
         firestore: Firestore,
@@ -156,11 +162,30 @@ extern "C" {
     #[wasm_bindgen(js_namespace = Timestamp)]
     pub fn now() -> Timestamp;
 
+    #[wasm_bindgen(js_namespace = Timestamp, js_name = fromDate)]
+    pub fn from_date(date: &Date) -> Timestamp;
+
+    #[wasm_bindgen(js_namespace = Timestamp, js_name = fromMillis)]
+    pub fn from_millis(milliseconds: f64) -> Timestamp;
+
     #[wasm_bindgen(method, js_name = toDate)]
     pub fn to_date(this: &Timestamp) -> Date;
 
+    #[wasm_bindgen(method, js_name = toMillis)]
+    pub fn to_millis(this: &Timestamp) -> f64;
+
     #[wasm_bindgen(method, js_name = isEqual)]
     pub fn is_equal(this: &Timestamp, other: &Timestamp) -> bool;
+
+    // =========================================================================
+    //                            DocumentReference
+    // =========================================================================
+
+    #[wasm_bindgen(method, getter)]
+    pub fn path(this: &DocumentReference) -> String;
+
+    #[wasm_bindgen(method, getter)]
+    pub fn id(this: &DocumentReference) -> String;
 }
 
 impl PartialEq for Timestamp {
@@ -168,3 +193,11 @@ impl PartialEq for Timestamp {
         self.is_equal(other)
     }
 }
+impl Eq for Timestamp {}
+
+impl PartialEq for DocumentReference {
+    fn eq(&self, other: &Self) -> bool {
+        self.path() == other.path()
+    }
+}
+impl Eq for DocumentReference {}
