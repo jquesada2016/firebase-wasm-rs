@@ -85,7 +85,7 @@ pub struct User {
 #[wasm_bindgen_struct]
 #[opts(module = "firebase/auth")]
 impl User {
-    async fn delete(&self) -> MapValue<Result<(), JsValue>, Result<(), AuthError>> {
+    pub async fn delete(&self) -> MapValue<Result<(), JsValue>, Result<(), AuthError>> {
         self.delete_js()
             .await
             .map_err(|err| err.unchecked_into::<FirebaseError>().into())
